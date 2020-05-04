@@ -8,6 +8,6 @@ Installation:
 
 Usage:
 ```
-keys = parse_sfo(Some_ArrayBuffer);
-console.log(keys['TITLE']);
+const keys = parseSfo(dataView || buffer);
+console.log(keys.TITLE);
 ```

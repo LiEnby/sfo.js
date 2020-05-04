@@ -1,0 +1,19 @@
+{
+  "name": "sfo.js",
+  "version": "1.0.0",
+  "description": "JavaScript param.sfo parser.",
+  "main": "sfo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KuromeSan/sfo.js.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KuromeSan/sfo.js/issues"
+  },
+  "homepage": "https://github.com/KuromeSan/sfo.js#readme"
+}
