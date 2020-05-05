@@ -8,59 +8,38 @@ function readUint8(array)
 
 function readUint32(array)
 {
-	var Arr = new Uint8Array([0,0,0,0]);
-	for(var i = 0; i < 4; i++)
-	{
-		Arr[i] = array[ofset];
-		ofset++;
-	}
-	uint = new Uint32Array(Arr.buffer)[0]
+	var Arr = array.slice(ofset, ofset+4);
+	uint = new Uint32Array(Arr.buffer)[0];
+	ofset += 4;
 	return uint;
 }
 
 function readUint32At(array,offset)
 {
-	var Arr = new Uint8Array([0,0,0,0]);
-	for(var i = 0; i < 4; i++)
-	{
-		Arr[i] = array[offset+i];
-	}
-	uint = new Uint32Array(Arr.buffer)[0]
+	var Arr = array.slice(offset, offset+4);
+	uint = new Uint32Array(Arr.buffer)[0];
 	return uint;
 }
 
 function readUint16(array)
 {
-	var Arr = new Uint8Array([0,0]);
-	for(var i = 0; i < 2; i++)
-	{
-		Arr[i] = array[ofset];
-		ofset++;
-	}
+	var Arr = array.slice(ofset, ofset+2);
 	uint = new Uint16Array(Arr.buffer)[0]
+	ofset += 2;
 	return uint;
 }
 
 
 function readStringLen(array, length)
 {
-	var Arr = new Uint8Array(length);
-	for(var i = 0; i < length; i++)
-	{
-		Arr[i] = readUint8(array);
-	}
-	
+	var Arr = array.slice(ofset, ofset+length);
+	ofset += length;
 	return new TextDecoder("utf-8").decode(Arr);
 }
 
 function readStringLenAt(array, length,offset)
 {
-	var Arr = new Uint8Array(length);
-	for(var i = 0; i < length; i++)
-	{
-		Arr[i] = array[offset+i];
-	}
-	
+	var Arr = array.slice(offset, offset+length);
 	return new TextDecoder("utf-8").decode(Arr);
 }
 
@@ -126,27 +105,22 @@ function parse_sfo(sfoBytes)
 			var valOffset = SfoHeader.valofs + SfoEntries[ii].dataofs;
 			var value = "Unknown Type"
 			
-			if(SfoEntries[ii].type == PSF_TYPE_STR)
-			{
-				value = readStringAt(uint8Arr, valOffset)
-			}
-			else if(SfoEntries[ii].type == PSF_TYPE_VAL)
-			{
-				value = readUint32At(PSF_TYPE_VAL);
-			}
-			else if(SfoEntries[ii].type == PSF_TYPE_BIN)
-			{
-				var Arr = new Uint8Array(SfoEntries[ii].valsize)
-				for(var iii = 0; iii < Arr.length; iii++)
-				{
-					Arr[iii] = uint8Arr[valOffset+iii];
-				}
-				value = Arr
+			switch(SfoEntries[ii].type){
+				case PSF_TYPE_STR:
+					value = readStringAt(uint8Arr, valOffset)
+					break;	
+				case PSF_TYPE_VAL:
+					value = readUint32At(uint8Arr,valOffset + ii);
+					break
+				case PSF_TYPE_BIN:
+					value = uint8Arr.slice(valOffset + ii, SfoEntries[ii].valsize);
+					break
 			}
 			
 			SfoTable[keyName] = value;
 		}
-
+		
+		
 		return SfoTable;
 	}
 	else
